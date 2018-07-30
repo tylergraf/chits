@@ -14,6 +14,11 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
+import {PlayerService} from '../service/players.js';
+
+window.s = PlayerService;
+
+
 
 // These are the elements needed by this element.
 import '@polymer/app-layout/app-drawer/app-drawer.js';
@@ -177,8 +182,8 @@ class MyApp extends LitElement {
 
       <!-- This gets hidden on a small screen-->
       <nav class="toolbar-list">
-        <a selected?="${_page === 'view1'}" href="/view1">View One</a>
-        <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
+        <a selected?="${_page === 'playersCrud'}" href="/">Players</a>
+        <a selected?="${_page === 'chits'}" href="/chits">Chits</a>
         <a selected?="${_page === 'view3'}" href="/view3">View Three</a>
       </nav>
     </app-header>
@@ -187,22 +192,20 @@ class MyApp extends LitElement {
     <app-drawer opened="${_drawerOpened}"
         on-opened-changed="${e => this._updateDrawerState(e.target.opened)}">
       <nav class="drawer-list">
-        <a selected?="${_page === 'view1'}" href="/view1">View One</a>
-        <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
-        <a selected?="${_page === 'view3'}" href="/view3">View Three</a>
+        <a selected?="${_page === 'playersCrud'}" href="/">Players</a>
+        <a selected?="${_page === 'chits'}" href="/chits">Chits</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
-      <my-view1 class="page" active?="${_page === 'view1'}"></my-view1>
-      <my-view2 class="page" active?="${_page === 'view2'}"></my-view2>
-      <my-view3 class="page" active?="${_page === 'view3'}"></my-view3>
+      <players-crud class="page" active?="${_page === 'playersCrud'}"></players-crud>
+      <chits-crud class="page" active?="${_page === 'chits'}"></chits-crud>
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
 
     <footer>
-      <p>Made with &hearts; by the Polymer team.</p>
+      <p>Made with &hearts; by Tyler and Adam.</p>
     </footer>
 
     <snack-bar active?="${_snackbarOpened}">
@@ -267,7 +270,7 @@ class MyApp extends LitElement {
 
   _locationChanged() {
     const path = window.decodeURIComponent(window.location.pathname);
-    const page = path === '/' ? 'view1' : path.slice(1);
+    const page = path === '/' ? 'playersCrud' : path.slice(1);
     this._loadPage(page);
     // Any other info you might want to extract from the path (like page type),
     // you can do here.
@@ -284,17 +287,17 @@ class MyApp extends LitElement {
 
   _loadPage(page) {
     switch(page) {
-      case 'view1':
-        import('../components/my-view1.js').then((module) => {
+      case 'playersCrud':
+        import('../components/players-crud.js').then((module) => {
           // Put code in here that you want to run every time when
           // navigating to view1 after my-view1.js is loaded.
         });
         break;
-      case 'view2':
-        import('../components/my-view2.js');
-        break;
-      case 'view3':
-        import('../components/my-view3.js');
+      case 'chits':
+        import('../components/chits-crud.js').then((module) => {
+          // Put code in here that you want to run every time when
+          // navigating to view1 after my-view1.js is loaded.
+        });
         break;
       default:
         page = 'view404';
