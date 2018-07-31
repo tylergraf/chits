@@ -6,22 +6,26 @@ class PlayersCrud extends LitElement {
   constructor(){
     super();
     this.players = [];
-    this.loading = true;
+    this.loading = 'Loading...';
 
     this._getPlayers();
   }
   static get properties(){
     return {
       players: Array,
-      loading: Boolean
+      loading: String
     }
   }
   _getPlayers(){
-    this.loading = true;
+    this._loadingTimeout = setTimeout(()=>{
+      this.loading = 'Loading, promise...';
+    }, 1500);
+
+    this.loading = 'Loading...';
     PlayerService.getPlayers().then(players=>{
       this.players = players;
-      this.loading = false;
-      this._invalidateProperties();
+      this.loading = '';
+      clearTimeout(this._loadingTimeout);
     });
   }
   _createPlayer(e){
@@ -59,7 +63,7 @@ class PlayersCrud extends LitElement {
       <form action="" on-submit="${e => this._createPlayer(e)}">
         <input type="text" id="newName"><button type="submit">Create</button>
       </form>
-      ${loading ? html`Loading..` : ''}
+      ${loading}
       <ul>
         ${repeat(players,p=>p._id,player=>html`
           <li> <span>${player.name}</span> <button type="button" on-click="${e=>this._deletePlayer(e, player._id)}">x</button></li>
