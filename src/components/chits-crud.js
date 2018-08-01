@@ -6,7 +6,7 @@ class ChitsCrud extends LitElement {
 
   _render(props) {
     return html`
-      <h1>Chits</h1>
+      <h1>Chits Hello</h1>
     `
   }
 
