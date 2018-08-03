@@ -23,7 +23,7 @@ class ChitsCrud extends LitElement {
             this.loading = 'Loading, promise...';
         }, 1500);
         
-    this.loading = 'Loading...;
+    this.loading = 'Loading...';
         ChitService.getChits().then(chits =>{
            this.chits = chits;
            this.loading ='';
