@@ -74,7 +74,7 @@ class ChitsCrud extends LitElement {
         <ul>
         ${repeat(chits,c => c._id, chits=>html`
             <li> <span> ${chits.name}</span> <button type="button" on-click="${e=>this._deleteChits(e, chits._id)}">x</button>`)}
-        <ul>`
+        </ul>`
    }
 }
 
