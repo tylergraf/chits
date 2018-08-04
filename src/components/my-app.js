@@ -14,9 +14,6 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
-import {PlayerService} from '../service/players.js';
-
-window.s = PlayerService;
 
 
 
@@ -29,7 +26,7 @@ import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
 class MyApp extends LitElement {
-  _render({appTitle, _page, _drawerOpened, _snackbarOpened, _offline}) {
+  _render({appTitle, _page, _drawerOpened, _snackbarOpened, _offline, _item}) {
     // Anything that's related to rendering should be done in here.
     return html`
     <style>
@@ -182,9 +179,9 @@ class MyApp extends LitElement {
 
       <!-- This gets hidden on a small screen-->
       <nav class="toolbar-list">
-        <a selected?="${_page === 'playersCrud'}" href="/">Players</a>
+        <a selected?="${_page === 'rounds'}" href="/rounds">Rounds</a>
+        <a selected?="${_page === 'players'}" href="/players">Players</a>
         <a selected?="${_page === 'chits'}" href="/chits">Chits</a>
-        <a selected?="${_page === 'view3'}" href="/view3">View Three</a>
       </nav>
     </app-header>
 
@@ -192,14 +189,17 @@ class MyApp extends LitElement {
     <app-drawer opened="${_drawerOpened}"
         on-opened-changed="${e => this._updateDrawerState(e.target.opened)}">
       <nav class="drawer-list">
-        <a selected?="${_page === 'playersCrud'}" href="/">Players</a>
+        <a selected?="${_page === 'rounds'}" href="/rounds">Rounds</a>
+        <a selected?="${_page === 'players'}" href="/">Players</a>
         <a selected?="${_page === 'chits'}" href="/chits">Chits</a>
       </nav>
     </app-drawer>
 
     <!-- Main content -->
     <main role="main" class="main-content">
-      <players-crud class="page" active?="${_page === 'playersCrud'}"></players-crud>
+      <rounds-page class="page" active?="${_page === 'rounds'}"></rounds-page>
+      <round-page class="page" active?="${_page === 'round'}" round-id$="${_page === 'round' ? _item : ''}"></round-page>
+      <players-crud class="page" active?="${_page === 'players'}"></players-crud>
       <chits-crud class="page" active?="${_page === 'chits'}"></chits-crud>
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
@@ -217,6 +217,7 @@ class MyApp extends LitElement {
     return {
       appTitle: String,
       _page: String,
+      _item: String,
       _drawerOpened: Boolean,
       _snackbarOpened: Boolean,
       _offline: Boolean
@@ -270,8 +271,12 @@ class MyApp extends LitElement {
 
   _locationChanged() {
     const path = window.decodeURIComponent(window.location.pathname);
-    const page = path === '/' ? 'playersCrud' : path.slice(1);
-    this._loadPage(page);
+    let page = path.slice(1).split('/')[0];
+    let item = path.slice(1).split('/')[1];
+
+    page = path === '/' ? 'rounds' : page;
+
+    this._loadPage(page,item);
     // Any other info you might want to extract from the path (like page type),
     // you can do here.
 
@@ -285,13 +290,19 @@ class MyApp extends LitElement {
     }
   }
 
-  _loadPage(page) {
+  _loadPage(page, item = '') {
     switch(page) {
-      case 'playersCrud':
-        import('../components/players-crud.js').then((module) => {
-          // Put code in here that you want to run every time when
-          // navigating to view1 after my-view1.js is loaded.
-        });
+      case 'rounds':
+        import('../components/rounds-page.js');
+        break;
+      case 'round':
+        import('../components/round-page.js');
+        break;
+      case 'round':
+        import('../components/rounds-page.js');
+        break;
+      case 'players':
+        import('../components/players-crud.js');
         break;
       case 'chits':
         import('../components/chits-crud.js').then((module) => {
@@ -305,6 +316,7 @@ class MyApp extends LitElement {
     }
 
     this._page = page;
+    this._item = item;
   }
 }
 

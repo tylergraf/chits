@@ -17,7 +17,7 @@ class PlayersCrud extends LitElement {
     }
   }
   _getPlayers(){
-    this._loadingTimeout = setTimeout(()=>{
+    this._loadingTimeout = window.setTimeout(()=>{
       this.loading = 'Loading, promise...';
     }, 1500);
 
@@ -25,19 +25,22 @@ class PlayersCrud extends LitElement {
     PlayerService.getPlayers().then(players=>{
       this.players = players;
       this.loading = '';
-      clearTimeout(this._loadingTimeout);
+      window.clearTimeout(this._loadingTimeout);
     });
   }
   _createPlayer(e){
     e.preventDefault();
     let newNameEl = this.shadowRoot.querySelector('#newName');
+    let avatarEl = this.shadowRoot.querySelector('#avatar');
     let name = newNameEl.value;
+    let avatarUrl = avatarEl.value;
     if(!name) return;
 
-    PlayerService.newPlayer({name})
+    PlayerService.newPlayer({name, avatarUrl})
       .then(player=>{
         this._getPlayers();
         newNameEl.value = '';
+        avatarEl.value = '';
       })
   }
   _deletePlayer(e, id){
@@ -61,7 +64,11 @@ class PlayersCrud extends LitElement {
       </style>
       <h1>Players</h1>
       <form action="" on-submit="${e => this._createPlayer(e)}">
-        <input type="text" id="newName"><button type="submit">Create</button>
+        <label for="newName">Name</label>
+        <input type="text" id="newName">
+        <label for="avatar">Avatar URL</label>
+        <input type="text" id="avatar">
+        <button type="submit">Create</button>
       </form>
       ${loading}
       <ul>
