@@ -5,7 +5,7 @@ import { repeat } from 'lit-html/lib/repeat.js';
 class ChitsCrud extends LitElement {
     
     constructor() {
-        super();  // what's the purpose of this super?
+        super();  
         this.chits = [];
         this.loading = 'Loading...';
         
@@ -34,14 +34,14 @@ class ChitsCrud extends LitElement {
     
     _createChits(e){
         e.preventDefault();
-        let newChitEl = this.shadowRoot.querySelector('#newChit'); // What is shadowRoot?
-        let chitName = newChitEl.value;
-        if(!chitName) return; //...if null, return...what?
+        let newChitEl = this.shadowRoot.querySelector('#newChit'); 
+        let name = newChitEl.value;
+        if(!name) return; 
         
-        ChitService.newChit({chitName})
+        ChitService.newChits({name})
             .then(chit=>{
             this._getChits();
-            newChitEl.value = '';  //removes value from input text box
+            newChitEl.value = '';  
         }) 
     }
     
