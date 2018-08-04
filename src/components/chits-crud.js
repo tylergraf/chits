@@ -3,8 +3,9 @@ import { ChitService } from '../service/chits.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 
 class ChitsCrud extends LitElement {
+    
     constructor() {
-        super();  // what's the purpose of this super?
+        super();  
         this.chits = [];
         this.loading = 'Loading...';
         
@@ -28,20 +29,19 @@ class ChitsCrud extends LitElement {
            this.chits = chits;
            this.loading ='';
             clearTimeout(this._loadingTimeout);
-        });
-        
+        }); 
     }
     
     _createChits(e){
         e.preventDefault();
-        let newChitEl = this.shadowRoot.querySelector('#newChit'); // What is shadowRoot?
-        let chit = newChitEl.value;
-        if(!chit) return; //...if null, return...what?
+        let newChitEl = this.shadowRoot.querySelector('#newChit'); 
+        let name = newChitEl.value;
+        if(!name) return; 
         
-        ChitService.newChit({chit})
-            .then(chits=>{
+        ChitService.newChits({name})
+            .then(chit=>{
             this._getChits();
-            newChitEl.value = '';  //removes value from input text box
+            newChitEl.value = '';  
         }) 
     }
     
@@ -49,12 +49,13 @@ class ChitsCrud extends LitElement {
         e.preventDefault();
         
         ChitService.deleteChits(id)
-        .then(chits=>{
+        .then(chit=>{
             this._getChits();
         })
     }
     
-    _render({chits, loading}) { //why parameters of render in brackets and parantheses?
+    
+    _render({chits, loading}) { 
         return html`
         <style>
             li button {
@@ -62,7 +63,7 @@ class ChitsCrud extends LitElement {
             cursor: pointer;
             }
 
-        li: hover button {
+        li:hover button {
             display: inline;
             }
         </style>
@@ -75,6 +76,7 @@ class ChitsCrud extends LitElement {
         ${repeat(chits,c => c._id, chits=>html`
             <li> <span> ${chits.name}</span> <button type="button" on-click="${e=>this._deleteChits(e, chits._id)}">x</button>`)}
         </ul>`
+
    }
 }
 
