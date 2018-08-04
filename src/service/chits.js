@@ -6,7 +6,7 @@ class ChitService {
         return fetch(`${apiBase}/chits`);
     }
     
-    static getChits(id) {
+    static getChit(id) {
         return fetch(`${apiBase}/chit/${id}`); //chit not chits?
     }
     
