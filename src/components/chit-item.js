@@ -16,7 +16,9 @@ class ChitItem extends LitElement {
           color: #333;
         }
       </style>
-      <span>${chit.name}</span>
+      ${chit ? html`
+        <span>${chit.name}</span>
+      `: ''}
     `
   }
 

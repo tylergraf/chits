@@ -1,5 +1,6 @@
 import { LitElement, html } from '@polymer/lit-element';
 import { RoundsService } from '../service/rounds.js';
+import { TimeService } from '../service/time.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 
 class RoundsPage extends LitElement {
@@ -34,7 +35,7 @@ class RoundsPage extends LitElement {
     e.preventDefault();
     RoundsService.newRound()
       .then(round=>{
-        this._getRounds();
+        window.location = `/round/${round._id}`;
       })
   }
   _deleteRound(e, id){
@@ -75,7 +76,11 @@ class RoundsPage extends LitElement {
       ${loading === '' && rounds.length ? html`
       <ul>
         ${repeat(rounds,p=>p._id,round=>html`
-          <li><a href="/round/${round._id}">${round._id}</a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
+          ${round && round.course ? html`
+            <li><a href="/round/${round._id}">Round at ${round.course.name} <span>(${TimeService._getCreationDate(round.created)})</span></a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
+          ` : html`
+            <li><a href="/round/${round._id}">${round._id}</a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
+          `}
         `)}
       </ul>
       ` : html`

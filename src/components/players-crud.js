@@ -1,6 +1,7 @@
 import { LitElement, html } from '@polymer/lit-element';
 import { PlayerService } from '../service/players.js';
 import { repeat } from 'lit-html/lib/repeat.js';
+import './player-item.js';
 
 class PlayersCrud extends LitElement {
   constructor(){
@@ -73,7 +74,10 @@ class PlayersCrud extends LitElement {
       ${loading}
       <ul>
         ${repeat(players,p=>p._id,player=>html`
-          <li> <span>${player.name}</span> <button type="button" on-click="${e=>this._deletePlayer(e, player._id)}">x</button></li>
+          <li>
+            <player-item player="${player}"></player-item>
+            <button type="button" on-click="${e=>this._deletePlayer(e, player._id)}">x</button>
+          </li>
         `)}
       </ul>
     `
