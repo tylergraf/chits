@@ -1,9 +1,7 @@
 import { LitElement, html } from '@polymer/lit-element';
 
 class PlayerItem extends LitElement {
-  constructor(){
-    super();
-  }
+ 
   static get properties(){
     return {
       player: Object
