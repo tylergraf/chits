@@ -52,6 +52,10 @@ class RoundsPage extends LitElement {
   _render({rounds, loading, _showNew}) {
     return html`
       <style>
+        ul {
+          z-index: 1;
+          position: relative;
+        }
         li button {
           display: none;
           cursor: pointer;
@@ -59,18 +63,25 @@ class RoundsPage extends LitElement {
         li:hover button {
           display: inline;
         }
+        :host {
+          min-height: 100vh;
+          background-color: #fff;
+          background: linear-gradient(to bottom, #ffffff 0%,#d4d9df 70%,#d4d9df 100%);
+        }
+        .img {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          padding-top: 66.66%;
+          background: url('/images/golf-course.jpg') no-repeat;
+          background-size: cover;
+          z-index: 0;
+        }
       </style>
       <h1>Rounds</h1>
 
-      ${_showNew ? html`
-        <form action="" on-submit="${e => this._createRound(e)}">
-          <input type="text" id="newName">
-          <button type="submit">Create</button>
-          <button type="button" on-click="${e=>this._toggleShowNew()}">Cancel</button>
-        </form>
-      `: html`
-        <button type="button" on-click="${e=>this._toggleShowNew()}">Add Round</button>
-      `}
+      <a href="/round/new">New Round</a>
 
       ${loading}
       ${loading === '' && rounds.length ? html`

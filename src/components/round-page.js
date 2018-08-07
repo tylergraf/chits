@@ -13,7 +13,7 @@ class RoundPage extends LitElement {
   static get observedAttributes() {return ['round-id']; }
   constructor(){
     super();
-    this._round = {players:[], chits:[]};
+    this._round = {players:[], chits:[], holes:[]};
     this._chits = [];
     this._players = [];
     this.loading = 'Loading...';
@@ -34,16 +34,34 @@ class RoundPage extends LitElement {
       _round: Object,
       _searchResults: Array,
       _position: Object,
-      loading: String
+      loading: String,
+      _roundId: String
     }
   }
   set roundId(id){
     this._roundId = id;
+    if(id === 'new'){
+      this._round = {players:[], chits:[], holes:[]};
+      this._chits = [];
+      this._players = [];
+      this._searchResults = [];
+      return;
+    }
     RoundsService.getRound(id).then(round=>{
       this._round = round});
   }
   get roundId(){
     return this._roundId;
+  }
+  _createRound(){
+    if(this._roundId === 'new'){
+      return RoundsService.newRound()
+        .then(round=>{
+          this._round = round;
+          return round;
+        });
+    }
+    return Promise.resolve(this._round);
   }
   _getRounds(){
     this._loadingTimeout = window.setTimeout(()=>{
@@ -57,22 +75,21 @@ class RoundPage extends LitElement {
       window.clearTimeout(this._loadingTimeout);
     });
   }
-  _createRound(e){
-    e.preventDefault();
-    RoundsService.newRound()
-      .then(round=>{
-        this._getRounds();
-      })
-  }
+
   _addPlayer(e, id, _round){
     e.preventDefault();
-    let round = Object.assign({},_round);
-    round.players.push(id);
-    RoundsService.updateRound(round)
+    this._createRound()
+      .then(data=>{
+        let round = Object.assign({},data);
+        round.players.push(id);
+        return RoundsService.updateRound(round)
+      })
       .then(savedRound=>{
         this._round = savedRound;
         this._players = this._players.filter(p=>p._id !== id);
-        this._invalidateProperties();
+        if(this._roundId === 'new'){
+          window.location = `/round/${savedRound._id}`
+        }
       })
   }
   _removePlayer(e, id, _round){
@@ -85,24 +102,37 @@ class RoundPage extends LitElement {
         this._invalidateProperties();
       })
   }
-  _addCourse(e, course, _round){
+  _addCourse(e, course){
     e.preventDefault();
-    let round = Object.assign({},_round);
-    round.course = course;
-    RoundsService.updateRound(round)
+    this._createRound()
+      .then(data=>{
+        let round = Object.assign({},data);
+        round.course = course;
+        return RoundsService.updateRound(round)
+      })
       .then(savedRound=>{
         this._round = savedRound;
+        if(this._roundId === 'new'){
+          window.location = `/round/${savedRound._id}`
+        }
       })
   }
   _addChit(e, id, _round){
     e.preventDefault();
-    let round = Object.assign({},_round);
-    round.chits.push(id);
-    RoundsService.updateRound(round)
+    this._createRound()
+      .then(data=>{
+        let round = Object.assign({},data);
+        round.chits.push(id);
+        return RoundsService.updateRound(round)
+      })
       .then(savedRound=>{
         this._round = savedRound;
         this._chits = this._chits.filter(p=>p._id !== id);
-      })
+
+        if(this._roundId === 'new'){
+          window.location = `/round/${savedRound._id}`
+        }
+      });
   }
   _removeChit(e, id, _round){
     e.preventDefault();
@@ -168,17 +198,28 @@ class RoundPage extends LitElement {
         console.log(this._position);
       });
   }
-  _render({_round, rounds, _players, loading, _chits, _searchResults, _position}) {
+  _getCurrentHole(round){
+    if(round.currentHole){
+      return round.holes[round.currentHole-1];
+    }
+    return round.holes[0];
+  }
+  _render({_roundId, _round, rounds, _players, loading, _chits, _searchResults, _position}) {
+
     return html`
       <style>
         .fs-dialog__body {
           width: 250px;
         }
       </style>
-      ${!_round.course ? html`
-        <h1>Round ${_round._id}</h1>
+      ${_roundId === 'new' ? html`
+        <h1>New Round</h1>
       ` : html`
-        <h1>Round at ${_round.course.name}</h1>
+        ${_round && _round.course ? html`
+          <h1>Round at ${_round.course.name}</h1>
+        ` : html`
+          <h1>Round ${_round._id}</h1>
+        `}
       `}
       <h3>${TimeService._getCreationDate(_round.created)}</h3>
       ${!_round.course ? html`
@@ -196,7 +237,7 @@ class RoundPage extends LitElement {
           `}
         </form>
       ` : ''}
-      <h2>Players</h2>
+      <h2>Players in this round</h2>
       <button type="button" on-click="${e=>this._showAddDialog(e, 'playersDialog')}">Add Player to Round</button>
 
       ${_round.players.length ? html`
@@ -209,7 +250,7 @@ class RoundPage extends LitElement {
         </ul>
       `: ''}
 
-      <h2>Chits</h2>
+      <h2>Chits for this round</h2>
       <button type="button" on-click="${e=>this._showAddDialog(e, 'chitsDialog')}">Add Chit to Round</button>
 
       ${_round.chits.length ? html`
@@ -222,9 +263,19 @@ class RoundPage extends LitElement {
           `)}
         </ul>
       `: ''}
+      ${_round && _round._id ? html`
+        <button type="button" on-click="${e=>this._deleteRound()}">Delete Round</button>
+      `: html`
+        <a href="/rounds">Cancel</a>
+      `}
 
-      <button type="button" on-click="${e=>this._deleteRound()}">Delete Round</button>
-
+      <div>
+        ${_round.currentHole ? html`
+          <a href="/hole/${this._getCurrentHole(_round)}">Continue Round</a>
+        ` : html`
+          <a href="/hole/${this._getCurrentHole(_round)}">Start Round</a>
+        `}
+      </div>
       <fs-anchored-dialog id="searchDialog" no-transition no-close-button preferred-pointer-direction="up left right down">
         <div class="fs-dialog__body">
         ${_searchResults ? html`
@@ -232,14 +283,14 @@ class RoundPage extends LitElement {
             ${repeat(_searchResults,r=>r.id,result=>html`
               <li>
                 <span>${result.name}</span>
-                <button type="button" on-click="${e=>this._addCourse(e, result, _round)}">Select</button>
+                <button data-dialog-dismiss type="button" on-click="${e=>this._addCourse(e, result)}">Select</button>
               </li>
             `)}
           </ul>
         ` : html`
           <p>No Courses found</p>
         `}
-          <button type="button" data-dialog-dismiss>Done</button>
+          <button type="button" data-dialog-dismiss>Cancel</button>
         </div>
       </fs-anchored-dialog>
       <fs-anchored-dialog id="playersDialog" no-transition no-close-button preferred-pointer-direction="up left right down">

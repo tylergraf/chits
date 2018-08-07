@@ -4,7 +4,7 @@
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view1.js": {
+    "src/components/rounds-page.js": {
       "type": "script",
       "weight": 1
     },
@@ -13,12 +13,12 @@
       "weight": 1
     }
   },
-  "/view1": {
+  "/rounds": {
     "src/components/my-app.js": {
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view1.js": {
+    "src/components/rounds-page.js": {
       "type": "script",
       "weight": 1
     },
@@ -27,12 +27,12 @@
       "weight": 1
     }
   },
-  "/view2": {
+  "/round": {
     "src/components/my-app.js": {
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view2.js": {
+    "src/components/round-page.js": {
       "type": "script",
       "weight": 1
     },
@@ -41,12 +41,26 @@
       "weight": 1
     }
   },
-  "/view3": {
+  "/players": {
     "src/components/my-app.js": {
       "type": "script",
       "weight": 1
     },
-    "src/components/my-view3.js": {
+    "src/components/players-crud.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js": {
+      "type": "script",
+      "weight": 1
+    }
+  },
+  "/chits": {
+    "src/components/my-app.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/components/chits-crud.js": {
       "type": "script",
       "weight": 1
     },

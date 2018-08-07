@@ -26,7 +26,7 @@ import { menuIcon } from './my-icons.js';
 import './snack-bar.js';
 
 class MyApp extends LitElement {
-  _render({appTitle, _page, _drawerOpened, _snackbarOpened, _offline, _item}) {
+  _render({appTitle, _page, _drawerOpened, _snackbarOpened, _offline, _item, _params}) {
     // Anything that's related to rendering should be done in here.
     return html`
     <style>
@@ -190,7 +190,7 @@ class MyApp extends LitElement {
         on-opened-changed="${e => this._updateDrawerState(e.target.opened)}">
       <nav class="drawer-list">
         <a selected?="${_page === 'rounds'}" href="/rounds">Rounds</a>
-        <a selected?="${_page === 'players'}" href="/">Players</a>
+        <a selected?="${_page === 'players'}" href="/players">Players</a>
         <a selected?="${_page === 'chits'}" href="/chits">Chits</a>
       </nav>
     </app-drawer>
@@ -199,6 +199,7 @@ class MyApp extends LitElement {
     <main role="main" class="main-content">
       <rounds-page class="page" active?="${_page === 'rounds'}"></rounds-page>
       <round-page class="page" active?="${_page === 'round'}" round-id$="${_page === 'round' ? _item : ''}"></round-page>
+      <hole-page class="page" active?="${_page === 'hole'}" roundId="${_params.round}" hole-id$="${_page === 'hole' ? _item : ''}"></hole-page>
       <players-crud class="page" active?="${_page === 'players'}"></players-crud>
       <chits-crud class="page" active?="${_page === 'chits'}"></chits-crud>
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
@@ -217,6 +218,7 @@ class MyApp extends LitElement {
     return {
       appTitle: String,
       _page: String,
+      _params: String,
       _item: String,
       _drawerOpened: Boolean,
       _snackbarOpened: Boolean,
@@ -227,6 +229,8 @@ class MyApp extends LitElement {
   constructor() {
     super();
     this._drawerOpened = false;
+    this._params = {};
+
     // To force all event listeners for gestures to be passive.
     // See https://www.polymer-project.org/2.0/docs/devguide/gesture-events#use-passive-gesture-listeners
     setPassiveTouchGestures(true);
@@ -271,12 +275,24 @@ class MyApp extends LitElement {
 
   _locationChanged() {
     const path = window.decodeURIComponent(window.location.pathname);
+    let query = window.decodeURIComponent(window.location.search);
     let page = path.slice(1).split('/')[0];
     let item = path.slice(1).split('/')[1];
+    let params;
+    query = query && query.slice(1, query.length-1).split('?');
+
+    if(query.length){
+      params = query.reduce((obj, param)=>{
+        param = param.split('=');
+
+        obj[param[0]] = param[1];
+        return obj;
+      },{});
+    }
 
     page = path === '/' ? 'rounds' : page;
 
-    this._loadPage(page,item);
+    this._loadPage(page, item, params);
     // Any other info you might want to extract from the path (like page type),
     // you can do here.
 
@@ -290,7 +306,7 @@ class MyApp extends LitElement {
     }
   }
 
-  _loadPage(page, item = '') {
+  _loadPage(page, item = '', params = {}) {
     switch(page) {
       case 'rounds':
         import('../components/rounds-page.js');
@@ -298,8 +314,8 @@ class MyApp extends LitElement {
       case 'round':
         import('../components/round-page.js');
         break;
-      case 'round':
-        import('../components/rounds-page.js');
+      case 'hole':
+        import('../components/hole-page.js');
         break;
       case 'players':
         import('../components/players-crud.js');
@@ -315,6 +331,7 @@ class MyApp extends LitElement {
         import('../components/my-view404.js');
     }
 
+    this._params = params;
     this._page = page;
     this._item = item;
   }
