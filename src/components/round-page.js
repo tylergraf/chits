@@ -7,6 +7,7 @@ import { TimeService } from '../service/time.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 import 'fs-dialog/fs-anchored-dialog.js';
 import './chit-item.js';
+import './player-item.js';
 
 class RoundPage extends LitElement {
   static get observedAttributes() {return ['round-id']; }
@@ -201,7 +202,9 @@ class RoundPage extends LitElement {
       ${_round.players.length ? html`
         <ul>
           ${repeat(_round.players,p=>p._id,player=>html`
-            <li><span>${player.name}</span><button type="button" on-click="${e=>this._removePlayer(e, player._id, _round)}">x</button></li>
+            <li>
+            <player-item player="${player}"></player-item>
+            <button type="button" on-click="${e=>this._removePlayer(e, player._id, _round)}">x</button></li>
           `)}
         </ul>
       `: ''}
