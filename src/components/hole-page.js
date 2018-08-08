@@ -4,6 +4,7 @@ import { RoundsService } from '../service/rounds.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 import 'fs-dialog/fs-anchored-dialog.js';
 import './chit-item.js';
+import sharedStyles from './shared-styles.js';
 
 class HolePage extends LitElement {
   static get observedAttributes() {return ['hole-id']; }
@@ -45,6 +46,7 @@ class HolePage extends LitElement {
   }
   _getHole(){
     HoleService.getHole(this._holeId).then(hole=>{
+
       this._setHole(hole._round, hole.number);
       hole._round.chits = hole._round.chits.map(chit=>{
 
@@ -55,11 +57,10 @@ class HolePage extends LitElement {
 
         return {_chit: chit};
       })
-      this._hole = hole;
+      this._hole = Object.assign({},hole);
     });
   }
   set holeId(id){
-    this._hole = {};
     this._holeId = id;
     this._getHole();
   }
@@ -87,15 +88,38 @@ class HolePage extends LitElement {
     if(!_hole._round) return html`Loading`;
 
     return html`
-      <h1>Number ${_hole.number}</h1>
-      <div>
-        <a href="/round/${_hole._round._id}">Edit Round</a>
-      </div>
-      <a href="/hole/${this._getPrevHole(_hole._round, _hole.number)}">Prev</a>
-      <a href="/hole/${this._getNextHole(_hole._round, _hole.number)}">Next</a>
+      ${sharedStyles}
+      <style>
+        header,
+        nav {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        header {
+          border-bottom: 1px solid #ccc;
+        }
+      </style>
+      <header>
+        <div>
+          <h2>${_hole._round.course.name}</h2>
+        </div>
+        <div>
+          <a class="button" href="/round/${_hole._round._id}">Edit Round</a>
+        </div>
+      </header>
+      <nav>
+        <div>
+          <a href="/hole/${this._getPrevHole(_hole._round, _hole.number)}">Prev</a>
+        </div>
+        <h3>Number ${_hole.number}</h3>
+        <div>
+          <a href="/hole/${this._getNextHole(_hole._round, _hole.number)}">Next</a>
+        </div>
+      </nav>
 
       ${_hole && _hole._round && _hole._round.chits && repeat(_hole._round.chits, chit=>chit._chit._id, chit=>html`
-        <h3>${chit._chit.name}</h3>
+        <h4>${chit._chit.name}</h4>
         ${repeat(_hole._round.players, player=>player._id, (player, index)=>html`
           <span>
             <input on-input="${e=>this._markChit(_hole, chit._chit._id, player._id)}" type="radio" name="${chit._chit._id}" checked="${chit._player && chit._player._id === player._id}" id="${chit._chit._id}_${player._id}">

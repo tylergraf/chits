@@ -2,6 +2,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { RoundsService } from '../service/rounds.js';
 import { TimeService } from '../service/time.js';
 import { repeat } from 'lit-html/lib/repeat.js';
+import sharedStyles from './shared-styles.js';
 
 class RoundsPage extends LitElement {
   constructor(){
@@ -49,8 +50,15 @@ class RoundsPage extends LitElement {
   _toggleShowNew(){
     this._showNew = !this._showNew;
   }
+  _getRoundUrl(round){
+    if(round.currentHole){
+      return `/hole/${round.holes[round.currentHole-1]}`;
+    }
+    return `/round/${round._id}`;
+  }
   _render({rounds, loading, _showNew}) {
     return html`
+      ${sharedStyles}
       <style>
         ul {
           z-index: 1;
@@ -64,9 +72,9 @@ class RoundsPage extends LitElement {
           display: inline;
         }
         :host {
-          min-height: 100vh;
-          background-color: #fff;
-          background: linear-gradient(to bottom, #ffffff 0%,#d4d9df 70%,#d4d9df 100%);
+          /* min-height: 100vh; */
+          /* background-color: #fff; */
+          /* background: linear-gradient(to bottom, #ffffff 0%,#d4d9df 70%,#d4d9df 100%); */
         }
         .img {
           position: absolute;
@@ -88,7 +96,7 @@ class RoundsPage extends LitElement {
       <ul>
         ${repeat(rounds,p=>p._id,round=>html`
           ${round && round.course ? html`
-            <li><a href="/round/${round._id}">Round at ${round.course.name} <span>(${TimeService._getCreationDate(round.created)})</span></a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
+            <li><a href="${this._getRoundUrl(round)}">Round at ${round.course.name} <span>(${TimeService._getCreationDate(round.created)})</span></a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
           ` : html`
             <li><a href="/round/${round._id}">${round._id}</a><button type="button" on-click="${e=>this._deleteRound(e, round._id)}">x</button></li>
           `}

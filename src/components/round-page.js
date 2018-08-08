@@ -8,6 +8,8 @@ import { repeat } from 'lit-html/lib/repeat.js';
 import 'fs-dialog/fs-anchored-dialog.js';
 import './chit-item.js';
 import './player-item.js';
+import sharedStyles from './shared-styles.js';
+
 
 class RoundPage extends LitElement {
   static get observedAttributes() {return ['round-id']; }
@@ -207,6 +209,8 @@ class RoundPage extends LitElement {
   _render({_roundId, _round, rounds, _players, loading, _chits, _searchResults, _position}) {
 
     return html`
+      ${sharedStyles}
+
       <style>
         .fs-dialog__body {
           width: 250px;

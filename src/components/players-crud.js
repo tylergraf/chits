@@ -2,7 +2,7 @@ import { LitElement, html } from '@polymer/lit-element';
 import { PlayerService } from '../service/players.js';
 import { repeat } from 'lit-html/lib/repeat.js';
 import './player-item.js';
-
+import sharedStyles from './shared-styles.js';
 
 
 class PlayersCrud extends LitElement {
@@ -56,6 +56,7 @@ class PlayersCrud extends LitElement {
   }
   _render({players, loading}) {
     return html`
+      ${sharedStyles}
       <style>
         li button {
           display: none;
