@@ -136,7 +136,7 @@ class HolePage extends LitElement {
           </span>
           
         `)}
-        <button on-click="${e=>this._clearChit(e, hole, chitId)}">Clear</button>
+        <button on-click="${e=>this._clearChit(e, _hole, chit._id)}">Clear</button>
       `)}
     `
   }
