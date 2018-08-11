@@ -87,7 +87,7 @@ class HolePage extends LitElement {
   
   // Create _clearChit method
   _clearChit(e, hole, chitId) {
-    hole.chits = hole.chits.filter(chit=>chit._id !=== chitID);
+    hole.chits = hole.chits.filter(chit=>chit._id !== chitId);
     HoleService.updateHole(hole).then(savedHole=>this._getHole())
     
   }
