@@ -67,6 +67,7 @@ class HolePage extends LitElement {
   get holeId(){
     return this._holeId;
   }
+  
   _markChit(hole, chitId, playerId){
     let newChit = {_chit: chitId, _player: playerId};
 
@@ -83,6 +84,14 @@ class HolePage extends LitElement {
     // hole.chits = [];
     HoleService.updateHole(hole).then(savedHole=>this._getHole())
   }
+  
+  // Create _clearChit method
+  _clearChit(e, hole, chitId) {
+    hole.chits = hole.chits.filter(chit=>chit._id !== chitId);
+    HoleService.updateHole(hole).then(savedHole=>this._getHole())
+    
+  }
+  
   _render({_hole}) {
 
     if(!_hole._round) return html`Loading`;
@@ -125,7 +134,9 @@ class HolePage extends LitElement {
             <input on-input="${e=>this._markChit(_hole, chit._chit._id, player._id)}" type="radio" name="${chit._chit._id}" checked="${chit._player && chit._player._id === player._id}" id="${chit._chit._id}_${player._id}">
             <label for$="${chit._chit._id}_${player._id}">${player.name}</label>
           </span>
+          
         `)}
+        <button on-click="${e=>this._clearChit(e, _hole, chit._id)}">Clear</button>
       `)}
     `
   }
