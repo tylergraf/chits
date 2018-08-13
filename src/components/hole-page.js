@@ -22,16 +22,15 @@ class HolePage extends LitElement {
   }
   _getNextHole(round, currentNumber){
     if(currentNumber === 18){
-      return;
       console.log(18);
     }
-    return round.holes[currentNumber]._id;
+    return round.holes[currentNumber]
   }
   _getPrevHole(round, currentNumber){
     if(currentNumber === 1){
-      return;
+      console.log(1);
     }
-    return round.holes[currentNumber-2]._id;
+    return round.holes[currentNumber-2]
   }
   attributeChangedCallback(name, oldValue, newValue){
     this.holeId = newValue;
